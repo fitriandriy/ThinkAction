@@ -19,11 +19,13 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@canvasjs/vue-charts": "^1.0.1",
     "@headlessui/vue": "^1.7.13",
     "@highlightjs/vue-plugin": "^2.1.0",
     "@kyvg/vue3-notification": "^2.9.1",
     "@point-hub/vue-cookie": "^0.2.1",
     "@vueuse/core": "^10.1.2",
+    "axios": "^1.4.0",
     "cleave.js": "^1.6.0",
     "dayjs": "^1.11.7",
     "highlight.js": "^11.7.0",

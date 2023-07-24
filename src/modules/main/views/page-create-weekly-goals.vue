@@ -1,24 +1,20 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { BaseDatepicker, BaseTextarea, BaseSelect } from '@/components/index'
+import { BaseInput, BaseDatepicker, BaseTextarea, BaseSelect } from '@/components/index'
 
-const list = [
+const list = ref([
   { id: 1, label: 'Everyone' },
   { id: 2, label: 'Supporter' },
   { id: 3, label: 'Private' }
-]
+])
 
-const categories = [
+const categories = ref([
   { id: 1, label: 'Finance' },
   { id: 2, label: 'Health' },
   { id: 3, label: 'Education' }
-]
+])
 
-const resolution = [
-  { id: 1, label: 'Saving as much as 10 million' },
-  { id: 2, label: 'Reduce eye minus' },
-  { id: 3, label: 'Finish bootcamp react' }
-]
+const resolution = ref({ id: 1, label: 'Saving as much as 10 million' })
 
 const selected = ref({})
 
@@ -47,13 +43,13 @@ const text = ref('')
       ></component>
 
       <!-- Select Resolution -->
-      <span class="font-semibold text-[#3D8AF7] block mb-2">Select Resolution</span>
+      <span class="font-semibold text-[#3D8AF7] block mb-2">Resolution</span>
       <component
-        :is="BaseSelect"
-        v-model="selected"
-        :list="resolution"
-        border="full"
-        class="mb-8"
+        readonly
+        :is="BaseInput"
+        v-model="resolution.label"
+        border="simple"
+        class="mb-8 text-slate-400"
       ></component>
 
       <!-- Weekly Goals -->

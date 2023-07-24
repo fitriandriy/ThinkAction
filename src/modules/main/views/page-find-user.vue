@@ -1,65 +1,45 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
+import axios from 'axios'
 import { BaseInput } from '@/components/index'
 import UserSneakPeak from '../components/user-sneakpeak.vue'
 
-const form = ref({
-  key: ''
+let users = ref([])
+
+let data = reactive({
+  name: ''
 })
 
-const users = ref([
-  {
-    id: 'GhtHVSB12NHGBSGHHw',
-    fullname: 'Fitri Andriyani',
-    username: 'Fitri07',
-    avatar: 'https://ik.imagekit.io/at4li2svjc/PzV4gC17iYZl_HemoeHWaL',
-    supporter: [
-      {
-        id: 'GhtHVSB12NHGBSGHHg',
-        username: 'Alf'
-      },
-      {
-        id: 'GhtHVSB12NHGBSGHdd',
-        username: 'Ali'
-      },
-      {
-        id: 'GhtHVSB12NHGBSGHHs',
-        username: 'Aif'
-      },
-      {
-        id: 'GhtHVSB12NHGBSGHtg',
-        username: 'lif'
+async function search() {
+  axios
+    .get('http://localhost:8000/users', {
+      params: {
+        name: data.name
       }
-    ]
-  },
-  {
-    id: 'GhtHVSB12NHGBSGHHt',
-    fullname: 'Fadil',
-    username: 'Fadil_1w',
-    avatar: 'https://ik.imagekit.io/at4li2svjc/PzV4gC17iYZl_HemoeHWaL',
-    supporter: [
-      {
-        id: 'GhtHVSB12NHGBSGHHg',
-        username: 'Alf'
-      },
-      {
-        id: 'GhtHVSB12NHGBSGHdd',
-        username: 'Ali'
-      }
-    ]
-  }
-])
+    })
+    .then((result) => {
+      users.value = result.data.data
+      // console.log(JSON.stringify(result.data.data))
+      console.log(`DATA = ${JSON.stringify(users._rawValue)}`)
+    })
+    .catch((err) => {
+      console.log(err.response)
+    })
+}
 </script>
 
 <template>
   <div class="main-content-container">
-    <component
-      :is="BaseInput"
-      v-model="form.key"
-      placeholder="Cari pengguna"
-      class="border-2 border-slate rounded-lg"
-    >
-    </component>
+    <div class="flex">
+      <component
+        :is="BaseInput"
+        v-model="data.name"
+        placeholder="Cari pengguna"
+        class="border-2 border-slate rounded-lg w-full"
+        @keyup.enter="search"
+      >
+      </component>
+    </div>
 
     <!-- search result -->
     <div>

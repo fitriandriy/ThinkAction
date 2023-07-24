@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-mutating-props -->
 <script setup lang="ts">
 import moment from 'moment'
 
@@ -25,12 +26,24 @@ const props = withDefaults(defineProps<Props>(), {
   cheers_count: 0,
   comments_count: 0
 })
+
+async function cheers() {
+  props.cheers_count += 1
+  props.is_liked = true
+}
+
+async function undoCheers() {
+  props.cheers_count -= 1
+  props.is_liked = false
+}
+
+console.log(`CHEERS ${JSON.stringify(props)}`)
 </script>
 
 <template>
   <div class="shadow-lg p-3 rounded-lg border-2 mb-5">
     <!-- user info -->
-    <router-link :to="{ path: `post/${props.id}` }">
+    <router-link :to="{ path: `/post/${props.id}` }">
       <div class="flex space-x-3 mb-3">
         <img
           :src="props.user?.avatar"
@@ -58,7 +71,7 @@ const props = withDefaults(defineProps<Props>(), {
     <!-- cheers and comments -->
     <div>
       <div>
-        <button class="btn btn-icon rounded-full">
+        <button @click="cheers" v-if="props.is_liked == false" class="btn btn-icon rounded-full">
           <img src="/cheers.png" class="h-25px w-25px mr-2" />
           <router-link :to="{ path: `/post/${props.id}/cheers` }">
             <span>
@@ -66,6 +79,16 @@ const props = withDefaults(defineProps<Props>(), {
             </span>
           </router-link>
         </button>
+
+        <button @click="undoCheers" v-if="props.is_liked == true" class="btn btn-icon rounded-full">
+          <img src="/undo_cheers.png" class="h-25px w-25px mr-2" />
+          <router-link :to="{ path: `/post/${props.id}/cheers` }">
+            <span>
+              {{ props.cheers_count }}
+            </span>
+          </router-link>
+        </button>
+
         <button class="btn btn-icon rounded-full">
           <i class="i-fas-comments h-25px w-25px mr-2"></i>{{ props.comments_count }}
         </button>

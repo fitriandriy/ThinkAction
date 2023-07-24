@@ -5,7 +5,7 @@ import moment from 'moment'
 const notifications = ref([
   {
     id: 'GhtHVSB12NHGBSGHHg',
-    body: 'Ani request to support you',
+    body: 'Ani requested to support you',
     type: 'approval',
     applicant_id: 'GhtHVSB12NHGBSGHHH',
     created_at: '2023-06-29T13:45:06.740Z'

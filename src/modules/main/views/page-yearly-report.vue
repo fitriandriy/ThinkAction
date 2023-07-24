@@ -1,90 +1,277 @@
-<script setup lang="ts">
-import { ref } from 'vue'
-import { BaseDatepicker, BaseTextarea, BaseSelect } from '@/components/index'
-
-const list = [
-  { id: 1, label: 'Everyone' },
-  { id: 2, label: 'Supporter' },
-  { id: 3, label: 'Private' }
-]
-
-const categories = [
-  { id: 1, label: 'Finance' },
-  { id: 2, label: 'Health' },
-  { id: 3, label: 'Education' }
-]
-
-const resolution = [
-  { id: 1, label: 'Saving as much as 10 million' },
-  { id: 2, label: 'Reduce eye minus' },
-  { id: 3, label: 'Finish bootcamp react' }
-]
-
-const selected = ref({})
-
-const date = ref()
-const text = ref('')
-</script>
-
 <template>
   <div class="main-content-container">
-    <p class="text-lg font-semibold">Create Your Weekly Goals</p>
-    <hr />
-
     <div>
-      <p class="font-semibold text-lg text-[#3D8AF7] text-center mb-8">
-        Hi Fitri, you are now in week 8, let's set a goal!
-      </p>
-
-      <!-- Select Resolution's Category -->
-      <span class="font-semibold text-[#3D8AF7] block mb-2">Select Category</span>
-      <component
-        :is="BaseSelect"
-        v-model="selected"
-        :list="categories"
-        border="full"
-        class="mb-8"
-      ></component>
-
-      <!-- Select Resolution -->
-      <span class="font-semibold text-[#3D8AF7] block mb-2">Select Resolution</span>
-      <component
-        :is="BaseSelect"
-        v-model="selected"
-        :list="resolution"
-        border="full"
-        class="mb-8"
-      ></component>
-
-      <!-- Weekly Goals -->
-      <span class="font-semibold text-[#3D8AF7] block mb-2">Weekly Goals</span>
-      <component :is="BaseTextarea" v-model="text" border="simple" class="mb-8"></component>
-
-      <!-- due date input -->
-      <span class="font-semibold text-[#3D8AF7] block mb-2">Due Date</span>
-      <component :is="BaseDatepicker" v-model="date" border="full" class="mb-8" />
-
-      <!-- upload photo -->
-      <span class="font-semibold text-[#3D8AF7] block mb-2"
-        >Share the photo of your vision here</span
-      >
-      <label class="btn btn-primary bg-[#3D8AF7] mb-8">
-        <input type="file" class="pointer-events-none absolute opacity-0" />
-        <div class="flex items-center space-x-2">
-          <i class="block i-far-arrow-up-from-bracket"></i>
-          <span>Choose File</span>
+      <h3 class="font-semibold text-2xl">Yearly Report</h3>
+      <div class="flex justify-between">
+        <div>
+          <div class="flex space-x-1">
+            <div class="w-[15px] h-[15px] rounded-sm bg-[#95B2CB]"></div>
+            <p class="text-sm">{{ percentage.achieved }}% achieved</p>
+          </div>
+          <div class="flex space-x-1">
+            <div class="w-[15px] h-[15px] rounded-sm bg-[#FECAC8]"></div>
+            <p class="text-sm">{{ percentage.not_achieve }}% not achieved</p>
+          </div>
         </div>
-      </label>
-
-      <!-- share with -->
-      <span class="font-semibold text-[#3D8AF7] block mb-2">Share With</span>
-      <component :is="BaseSelect" v-model="selected" :list="list" border="full"></component>
-
-      <!-- button -->
-      <div class="flex justify-center space-x-2 mt-8">
-        <button class="btn btn-primary bg-[#3D8AF7] px-7">SAVE</button>
-        <button class="btn btn-danger">CANCEL</button>
+        <div class="flex space-x-3">
+          <button><i class="i-fas-paper-plane block"></i></button>
+          <button><i class="i-fas-download block"></i></button>
+          <button><i class="i-fas-filter block"></i></button>
+        </div>
       </div>
     </div>
+    <hr />
+
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr class="basic-table-row">
+            <th class="basic-table-head"></th>
+            <th v-for="category in weekly" :key="category.category_id" class="basic-table-head">
+              {{ category.category }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in 5" :key="item">
+            <td class="w-[60px] inline-block">week {{ item }}</td>
+            <td v-for="category in weekly" :key="category.category_id">
+              <div
+                v-if="category.resolutions.weekly_goals[item - 1].is_complete == true"
+                class="w-full h-full basic-table-body bg-[#95B2CB] rounded-md"
+              ></div>
+              <div
+                v-if="category.resolutions.weekly_goals[item - 1].is_complete == false"
+                class="w-full h-full basic-table-body bg-[#FECAC8] rounded-md"
+              ></div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <canvas id="myChart" style="width: 100%; max-width: 600px"></canvas>
   </div>
 </template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const percentage = ref({
+  achieved: 80,
+  not_achieve: 20
+})
+
+const weekly = ref([
+  {
+    category_id: 'GhtHVSB12NHGBSGHgg',
+    category: 'Finance',
+    resolutions: {
+      id: 'GhtHVSB12NHGBSGHgg',
+      resolution: 'nabung 10 juta',
+      due_date: '',
+      is_complete: true,
+      weekly_goals: [
+        {
+          id: 'GhtHVSB12NHGBSGHgg',
+          due_date: '2019-08-07T14:15:22Z',
+          is_complete: true,
+          goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
+        },
+        {
+          id: 'GhtHVSB12NHGBSGHgg',
+          due_date: '2019-08-14T14:15:22Z',
+          is_complete: false,
+          goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
+        },
+        {
+          id: 'GhtHVSB12NHGBSGHgg',
+          due_date: '2019-08-21T14:15:22Z',
+          is_complete: true,
+          goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
+        },
+        {
+          id: 'GhtHVSB12NHGBSGHgg',
+          due_date: '2019-08-28T14:15:22Z',
+          is_complete: true,
+          goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
+        },
+        {
+          id: 'GhtHVSB12NHGBSGHgg',
+          due_date: '2019-09-05T14:15:22Z',
+          is_complete: false,
+          goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
+        }
+      ]
+    }
+  },
+  {
+    category_id: 'GhtHVSB12NHGBSGHgg',
+    category: 'Education',
+    resolutions: {
+      id: 'GhtHVSB12NHGBSGHgg',
+      resolution: 'nabung 10 juta',
+      due_date: '',
+      is_complete: false,
+      weekly_goals: [
+        {
+          id: 'GhtHVSB12NHGBSGHgg',
+          due_date: '2019-08-07T14:15:22Z',
+          is_complete: true,
+          goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
+        },
+        {
+          id: 'GhtHVSB12NHGBSGHgg',
+          due_date: '2019-08-14T14:15:22Z',
+          is_complete: true,
+          goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
+        },
+        {
+          id: 'GhtHVSB12NHGBSGHgg',
+          due_date: '2019-08-21T14:15:22Z',
+          is_complete: true,
+          goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
+        },
+        {
+          id: 'GhtHVSB12NHGBSGHgg',
+          due_date: '2019-08-28T14:15:22Z',
+          is_complete: false,
+          goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
+        },
+        {
+          id: 'GhtHVSB12NHGBSGHgg',
+          due_date: '2019-09-05T14:15:22Z',
+          is_complete: false,
+          goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
+        }
+      ]
+    }
+  },
+  {
+    category_id: 'GhtHVSB12NHGBSGHgg',
+    category: 'Healthy',
+    resolutions: {
+      id: 'GhtHVSB12NHGBSGHgg',
+      resolution: 'nabung 10 juta',
+      due_date: '',
+      is_complete: false,
+      weekly_goals: [
+        {
+          id: 'GhtHVSB12NHGBSGHgg',
+          due_date: '2019-08-07T14:15:22Z',
+          is_complete: false,
+          goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
+        },
+        {
+          id: 'GhtHVSB12NHGBSGHgg',
+          due_date: '2019-08-14T14:15:22Z',
+          is_complete: true,
+          goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
+        },
+        {
+          id: 'GhtHVSB12NHGBSGHgg',
+          due_date: '2019-08-21T14:15:22Z',
+          is_complete: true,
+          goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
+        },
+        {
+          id: 'GhtHVSB12NHGBSGHgg',
+          due_date: '2019-08-28T14:15:22Z',
+          is_complete: true,
+          goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
+        },
+        {
+          id: 'GhtHVSB12NHGBSGHgg',
+          due_date: '2019-09-05T14:15:22Z',
+          is_complete: false,
+          goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
+        }
+      ]
+    }
+  },
+  {
+    category_id: 'GhtHVSB12NHGBSGHgg',
+    category: 'Healthy',
+    resolutions: {
+      id: 'GhtHVSB12NHGBSGHgg',
+      resolution: 'nabung 10 juta',
+      due_date: '',
+      is_complete: false,
+      weekly_goals: [
+        {
+          id: 'GhtHVSB12NHGBSGHgg',
+          due_date: '2019-08-07T14:15:22Z',
+          is_complete: false,
+          goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
+        },
+        {
+          id: 'GhtHVSB12NHGBSGHgg',
+          due_date: '2019-08-14T14:15:22Z',
+          is_complete: true,
+          goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
+        },
+        {
+          id: 'GhtHVSB12NHGBSGHgg',
+          due_date: '2019-08-21T14:15:22Z',
+          is_complete: true,
+          goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
+        },
+        {
+          id: 'GhtHVSB12NHGBSGHgg',
+          due_date: '2019-08-28T14:15:22Z',
+          is_complete: true,
+          goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
+        },
+        {
+          id: 'GhtHVSB12NHGBSGHgg',
+          due_date: '2019-09-05T14:15:22Z',
+          is_complete: false,
+          goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
+        }
+      ]
+    }
+  },
+  {
+    category_id: 'GhtHVSB12NHGBSGHgg',
+    category: 'Healthy',
+    resolutions: {
+      id: 'GhtHVSB12NHGBSGHgg',
+      resolution: 'nabung 10 juta',
+      due_date: '',
+      is_complete: false,
+      weekly_goals: [
+        {
+          id: 'GhtHVSB12NHGBSGHgg',
+          due_date: '2019-08-07T14:15:22Z',
+          is_complete: false,
+          goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
+        },
+        {
+          id: 'GhtHVSB12NHGBSGHgg',
+          due_date: '2019-08-14T14:15:22Z',
+          is_complete: true,
+          goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
+        },
+        {
+          id: 'GhtHVSB12NHGBSGHgg',
+          due_date: '2019-08-21T14:15:22Z',
+          is_complete: true,
+          goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
+        },
+        {
+          id: 'GhtHVSB12NHGBSGHgg',
+          due_date: '2019-08-28T14:15:22Z',
+          is_complete: true,
+          goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
+        },
+        {
+          id: 'GhtHVSB12NHGBSGHgg',
+          due_date: '2019-09-05T14:15:22Z',
+          is_complete: false,
+          goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
+        }
+      ]
+    }
+  }
+])
+</script>
