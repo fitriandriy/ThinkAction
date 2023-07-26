@@ -1,53 +1,44 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import axios from 'axios'
-import { usePostStore } from '@/stores/posts'
-const postStore = usePostStore()
+import { ref } from 'vue'
 import UserPost from '../components/user-post.vue'
 
-// const token = localStorage.getItem('accessToken')
-// const config = {
-//   headers: { Authorization: `Bearer ${token}` }
-// }
-
-let posts = ref([])
-onMounted(async () => {
-  axios
-    .get('http://localhost:8000/posts')
-    .then((result) => {
-      posts.value = result.data.data
-      postStore.$state.posts = result.data.data
-      // console.log(result)
-      // posts.value = result.data
-      // console.log(`POST = ${JSON.stringify(posts.value)}`)
-    })
-    .catch((err) => {
-      console.log(err.response)
-    })
-})
-
-// console.log(`POST VALUE ${JSON.stringify(posts)}`)
+const posts = ref([
+  {
+    id: 'GhtHVSB12NHGBSGHHt',
+    user: {
+      name: 'Fitri',
+      avatar: 'https://ik.imagekit.io/at4li2svjc/PzV4gC17iYZl_HemoeHWaL'
+    },
+    category: 'Finance',
+    caption: 'Lorem ipsum dolor sit amet.',
+    photos: [
+      'https://ik.imagekit.io/at4li2svjc/PzV4gC17iYZl_HemoeHWaL',
+      'https://ik.imagekit.io/at4li2svjc/PzV4gC17iYZl_HemoeHWaL'
+    ],
+    is_liked: false,
+    cheers_count: 20,
+    comments_count: 10,
+    date_time: '2019-08-24T14:15:22Z'
+  },
+  {
+    id: 'GhtHVSB12NHGBSGHHg',
+    user: {
+      name: 'Fitri A',
+      avatar: 'https://ik.imagekit.io/at4li2svjc/PzV4gC17iYZl_HemoeHWaL'
+    },
+    category: 'Finance',
+    caption: 'Lorem ipsum dolor sit amet.',
+    photos: ['https://ik.imagekit.io/at4li2svjc/PzV4gC17iYZl_HemoeHWaL'],
+    is_liked: false,
+    cheers_count: 20,
+    comments_count: 10,
+    date_time: '2019-08-24T14:15:22Z'
+  }
+])
 </script>
 
 <template>
   <div class="main-content-container">
-    <!-- jika goals sudah dibuat -->
-    <div v-if="posts.length > 0">
-      <div v-for="post in posts" :key="post.id">
-        <UserPost
-          :id="post.id"
-          :user="post.user"
-          :category="post.category"
-          :caption="post.caption"
-          :photos="post.photos"
-          :is_liked="post.is_liked"
-          :cheers_count="post.cheers_count"
-          :comments_count="post.comments_count"
-          :date_time="post.date_time"
-        ></UserPost>
-      </div>
-    </div>
-
     <!-- jika post belum dibuat -->
     <div v-if="posts.length < 1" class="flex justify-center lg:space-x-15">
       <div class="md:mt-[50px] lg:mt-[100px] space-y-5">
@@ -75,6 +66,23 @@ onMounted(async () => {
         class="w-0 md:w-[400px] lg:w-[600px] invisible md:visible"
         alt="goals image ilustration"
       />
+    </div>
+
+    <!-- jika goals sudah dibuat -->
+    <div v-if="posts.length > 0">
+      <div v-for="post in posts" :key="post.id">
+        <UserPost
+          :id="post.id"
+          :user="post.user"
+          :category="post.category"
+          :caption="post.caption"
+          :photos="post.photos"
+          :is_liked="post.is_liked"
+          :cheers_count="post.cheers_count"
+          :comments_count="post.comments_count"
+          :date_time="post.date_time"
+        ></UserPost>
+      </div>
     </div>
   </div>
 </template>

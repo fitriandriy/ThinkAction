@@ -8,6 +8,5 @@ export const codeExample = `<template>
   </label>
   <label class="btn btn-secondary rounded-full p-3">
     <input tabindex="-1" type="file" class="pointer-events-none absolute opacity-0" />
-    <i class="block i-far-arrow-up-from-bracket"></i>
   </label>
 <template>`

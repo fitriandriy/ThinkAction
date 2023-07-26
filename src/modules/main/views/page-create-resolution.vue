@@ -52,7 +52,7 @@ const form = ref({
       <label class="btn btn-primary bg-[#3D8AF7] mb-8">
         <input type="file" class="pointer-events-none absolute opacity-0" />
         <div class="flex items-center space-x-2">
-          <i class="block i-far-arrow-up-from-bracket"></i>
+          <!-- <i class="block i-far-arrow-up-from-bracket"></i> -->
           <span>Choose File</span>
         </div>
       </label>
