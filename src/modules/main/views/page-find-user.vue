@@ -4,7 +4,32 @@ import axios from 'axios'
 import { BaseInput } from '@/components/index'
 import UserSneakPeak from '../components/user-sneakpeak.vue'
 
-let users = ref([])
+let users = ref([
+  {
+    id: 'GhtHVSB12NHGBSGHHw',
+    fullname: 'Fitri Andriyani',
+    username: 'Fitri07',
+    avatar: 'https://ik.imagekit.io/at4li2svjc/PzV4gC17iYZl_HemoeHWaL',
+    supporter: [
+      {
+        id: 'GhtHVSB12NHGBSGHHg',
+        username: 'Alf'
+      },
+      {
+        id: 'GhtHVSB12NHGBSGHdd',
+        username: 'Ali'
+      },
+      {
+        id: 'GhtHVSB12NHGBSGHHs',
+        username: 'Aif'
+      },
+      {
+        id: 'GhtHVSB12NHGBSGHtg',
+        username: 'lif'
+      }
+    ]
+  }
+])
 
 let data = reactive({
   name: ''
@@ -20,7 +45,7 @@ async function search() {
     .then((result) => {
       users.value = result.data.data
       // console.log(JSON.stringify(result.data.data))
-      console.log(`DATA = ${JSON.stringify(users._rawValue)}`)
+      // console.log(`DATA = ${JSON.stringify(users.value._rawValue)}`)
     })
     .catch((err) => {
       console.log(err.response)
