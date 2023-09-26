@@ -2,9 +2,11 @@
 import { onMounted, ref } from 'vue'
 import { BaseDatepicker, BaseTextarea, BaseSelect, BaseInput } from '@/components/index'
 import { useUserStore } from '@/stores/user'
-import router from '@/router'
+import { useRoute, useRouter } from 'vue-router'
 import dayjs from 'dayjs'
 
+const route = useRoute()
+const router = useRouter()
 const list = [
   { id: 'public', label: 'Everyone' },
   { id: 'supporter', label: 'Supporter' },
@@ -29,8 +31,42 @@ const form = ref<any>({
   files: []
 })
 
-onMounted(async () => {
-  resolutions.value = await userStore.getResolutions()
+const id = route.params.id as string
+// const categories = ref<any>([])
+const currentGoal = ref<any>(null)
+
+onMounted(() => {
+  // userStore.getResolutionCategories().then((data) => {
+  //   categories.value = data
+  // })
+  userStore.getResolutions().then((data) => {
+    resolutions.value = data
+
+    let goal = userStore.findGoalById(id as string)
+    if (goal) {
+      form.value = {
+        category: goal.category,
+        visibility: goal.visibility,
+        caption: goal.caption,
+        date_time: goal.date_time,
+        resolution: {
+          goal_id: (goal.meta as any).resolution_id,
+          category: goal.category
+        },
+        files: goal.photos
+      }
+      selected.value.visibility = list.find((l) => goal?.visibility === l.id) || list[0]
+      let res =
+        resolutions.value.find((c: any) => c.id === (goal?.meta as any)?.resolution_id) ?? {}
+      form.value.resolution.caption = res.caption
+      selected.value.resolution = {
+        id: res.id,
+        label: res.category
+      }
+
+      currentGoal.value = goal
+    }
+  })
 })
 
 const onUpdateVisiblity = function (params: any) {
@@ -42,26 +78,26 @@ const onUpdateVisiblity = function (params: any) {
   form.value.visibility = id
 }
 
-const onUpdateResolution = async function (params: any) {
+const onUpdateResolution = function (params: any) {
   form.value.resolution = resolutions.value.find((r: any) => r.id === params.id)
+  selected.value.resolution = params
 }
 
 const submit = function () {
   let values = form.value
   let isAllFilled = values.caption && values.visibility && (selected.value.resolution as any)?.id // @ts-ignore-all
-
   if (isAllFilled) {
     // @ts-ignore
     values.category = values.resolution.category
     values.resolution.goal_id = values.resolution?.id
-    userStore.addWeeklyGoal(values)
+    userStore.editWeeklyGoal(values, id)
     router.push('/')
   }
 }
 </script>
 
 <template>
-  <div class="main-content-container">
+  <div v-if="currentGoal" class="main-content-container">
     <p class="text-lg font-semibold">Create Your Weekly Goals</p>
     <hr />
 
@@ -73,10 +109,10 @@ const submit = function () {
       <!-- Select Resolution -->
       <span class="font-semibold text-[#3D8AF7] block mb-2">Select Category</span>
       <BaseSelect
-        v-model="selected.resolution"
-        @update:modelValue="onUpdateResolution"
-        errorMessage="Choose a category"
         :is-error="!(selected.resolution as any).id"
+        errorMessage="Choose a category"
+        :model-value="selected.resolution"
+        @update:modelValue="onUpdateResolution"
         :list="
           resolutions.map(({ id, category }: any) => ({
             id: id,
@@ -98,7 +134,7 @@ const submit = function () {
       <!-- Weekly Goals -->
       <span class="font-semibold text-[#3D8AF7] block mb-2">Weekly Goals</span>
       <BaseTextarea
-        :error="!form.caption ? 'Input a caption' : ''"
+        :error="!form.caption ? 'Enter a caption' : ''"
         v-model="form.caption"
         border="simple"
         class="mb-8"
@@ -107,7 +143,9 @@ const submit = function () {
       <!-- due date input -->
       <span class="font-semibold text-[#3D8AF7] block mb-2">Due Date</span>
       <BaseDatepicker
-        :error="!form.date_time || dayjs(form.date_time).isBefore(dayjs()) ? 'Input a date' : ''"
+        :error="
+          !form.date_time || dayjs(form.date_time).isBefore(dayjs()) ? 'Enter a valid date' : ''
+        "
         v-model="form.date_time"
         border="full"
         class="mb-8"
@@ -127,15 +165,14 @@ const submit = function () {
 
       <!-- share with -->
       <span class="font-semibold text-[#3D8AF7] block mb-2">Share With</span>
-      <component
-        :is="BaseSelect"
+      <BaseSelect
+        :is-error="!(selected.visibility as any)?.id"
+        :error-message="'Choose a visibility'"
         @update:modelValue="onUpdateVisiblity"
         v-model="selected.visibility"
         :list="list"
         border="full"
-        :isError="!(selected.visibility as any)?.id"
-        errorMessage="Choose a visibilty"
-      ></component>
+      ></BaseSelect>
 
       <!-- button -->
       <div class="flex justify-center space-x-2 mt-8">

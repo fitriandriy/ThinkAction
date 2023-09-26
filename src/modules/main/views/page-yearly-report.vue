@@ -1,90 +1,76 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { BaseDatepicker, BaseTextarea, BaseSelect } from '@/components/index'
+import { onMounted, ref, watch } from 'vue'
+import { GoalModel } from '@/lib/models/GoalModel'
+import { useUserStore } from '@/stores/user'
+import dayjs from 'dayjs'
+import { BaseSelect } from '@/components'
 
-const list = [
-  { id: 1, label: 'Everyone' },
-  { id: 2, label: 'Supporter' },
-  { id: 3, label: 'Private' }
-]
+const store = useUserStore()
 
-const categories = [
-  { id: 1, label: 'Finance' },
-  { id: 2, label: 'Health' },
-  { id: 3, label: 'Education' }
-]
+let categorized = ref<any>([])
+let Categories = ref<any>([])
+let yearList = ref<any>([])
+const year = ref<any>({ id: 2023, label: '2023' })
 
-const resolution = [
-  { id: 1, label: 'Saving as much as 10 million' },
-  { id: 2, label: 'Reduce eye minus' },
-  { id: 3, label: 'Finish bootcamp react' }
-]
+onMounted(async () => {
+  let years = []
+  let firstYear = dayjs(new Date(2019, 0, 1)).year()
+  while (firstYear <= dayjs().year()) {
+    years.push({
+      id: firstYear,
+      label: dayjs(new Date(firstYear, 0)).format('YYYY')
+    })
+    firstYear += 1
+  }
+  yearList.value = years
+  Categories.value = await store.getResolutionCategories()
+  categorized.value = await GoalModel.generateYearlyReport(store, new Date().getFullYear())
+})
 
-const selected = ref({})
-
-const date = ref()
-const text = ref('')
+watch(year, async (currentValue) => {
+  if (currentValue.id)
+    categorized.value = await GoalModel.generateYearlyReport(store, currentValue.id)
+})
 </script>
 
 <template>
   <div class="main-content-container">
-    <p class="text-lg font-semibold">Create Your Weekly Goals</p>
+    <h3 class="font-semibold">Yearly Report</h3>
     <hr />
+    <div class="flex justify-end">
+      <BaseSelect v-model="year" :list="yearList"> </BaseSelect>
+    </div>
 
-    <div>
-      <p class="font-semibold text-lg text-[#3D8AF7] text-center mb-8">
-        Hi Fitri, you are now in week 8, let's set a goal!
-      </p>
-
-      <!-- Select Resolution's Category -->
-      <span class="font-semibold text-[#3D8AF7] block mb-2">Select Category</span>
-      <component
-        :is="BaseSelect"
-        v-model="selected"
-        :list="categories"
-        border="full"
-        class="mb-8"
-      ></component>
-
-      <!-- Select Resolution -->
-      <span class="font-semibold text-[#3D8AF7] block mb-2">Select Resolution</span>
-      <component
-        :is="BaseSelect"
-        v-model="selected"
-        :list="resolution"
-        border="full"
-        class="mb-8"
-      ></component>
-
-      <!-- Weekly Goals -->
-      <span class="font-semibold text-[#3D8AF7] block mb-2">Weekly Goals</span>
-      <component :is="BaseTextarea" v-model="text" border="simple" class="mb-8"></component>
-
-      <!-- due date input -->
-      <span class="font-semibold text-[#3D8AF7] block mb-2">Due Date</span>
-      <component :is="BaseDatepicker" v-model="date" border="full" class="mb-8" />
-
-      <!-- upload photo -->
-      <span class="font-semibold text-[#3D8AF7] block mb-2"
-        >Share the photo of your vision here</span
-      >
-      <label class="btn btn-primary bg-[#3D8AF7] mb-8">
-        <input type="file" class="pointer-events-none absolute opacity-0" />
-        <div class="flex items-center space-x-2">
-          <i class="block i-far-arrow-up-from-bracket"></i>
-          <span>Choose File</span>
-        </div>
-      </label>
-
-      <!-- share with -->
-      <span class="font-semibold text-[#3D8AF7] block mb-2">Share With</span>
-      <component :is="BaseSelect" v-model="selected" :list="list" border="full"></component>
-
-      <!-- button -->
-      <div class="flex justify-center space-x-2 mt-8">
-        <button class="btn btn-primary bg-[#3D8AF7] px-7">SAVE</button>
-        <button class="btn btn-danger">CANCEL</button>
-      </div>
+    <div class="table-container">
+      <table class="table">
+        <thead>
+          <tr class="basic-table-row">
+            <th class="basic-table-head"></th>
+            <th
+              v-for="category in Categories"
+              :key="category"
+              class="basic-table-head text-xs w-28 max-w-[7rem] min-w-[7rem] text-center"
+            >
+              {{ category }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="({ week, categories }, index) in categorized"
+            :key="week.start"
+            class="basic-table-row h-28"
+          >
+            <td class="basic-table-body text-sm min-w-[5rem] align-middle">Week {{ index + 1 }}</td>
+            <td v-for="{ id } in categories" :key="id" :class="'basic-table-body rounded-lg p-4'">
+              <div
+                class="w-20 h-20 flex rounded-lg"
+                :class="( categories.find((c: any) => c.id === id)?.goals?.is_completed === undefined? 'bg-gray-300':( categories.find((c: any) => c.id === id)?.goals?.is_completed ? 'bg-sky-300' : 'bg-pink-300'))"
+              ></div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>

@@ -78,7 +78,7 @@ const resize = () => {
     <div class="flex flex-1 flex-col">
       <textarea
         ref="textareaRef"
-        placeholder="Type, paste, cut text here..."
+        :placeholder="placeholder ?? 'Type, paste, cut text here...'"
         class="form-input resize-none overflow-hidden"
         :class="{
           'border-b border-x-none border-t-none px-1': border === 'simple',
@@ -88,13 +88,14 @@ const resize = () => {
         :style="{
           height: height + 'px'
         }"
+        :rows="5"
         v-model="value"
       ></textarea>
       <slot name="helper" v-if="helper">
         <span class="text-sm font-light text-slate-500">{{ helper }}</span>
       </slot>
       <slot name="error" v-if="error">
-        <span class="text-sm font-light text-danger">{{ error }}</span>
+        <span class="text-xs font-light mt-1 ml-2 text-red-400">{{ error }}</span>
       </slot>
     </div>
   </div>

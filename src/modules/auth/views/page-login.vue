@@ -1,11 +1,19 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { BaseInput } from '@/components/index'
+import { uuid } from '@/modules/data/users'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const form = ref({
   email: '',
   password: ''
 })
+
+const login = function () {
+  localStorage.setItem('token', uuid())
+  router.push('/')
+}
 </script>
 
 <template>
@@ -17,7 +25,7 @@ const form = ref({
       <p class="text-[grey]">Hi there! Nice to see you again</p>
     </div>
 
-    <form action="" method="post" class="space-y-5 text-center">
+    <form action="" @submit="login" method="post" class="space-y-5 text-center">
       <div class="space-y-2">
         <component
           :is="BaseInput"
@@ -42,7 +50,7 @@ const form = ref({
 
     <p class="text-slate text-center my-4 font-semibold">or use one of your social profiles</p>
 
-    <button class="btn w-full md:w-[300px] m-auto bg-[#F960D9] font-bold text-white">
+    <button @click="login" class="btn w-full md:w-[300px] m-auto bg-[#F960D9] font-bold text-white">
       <img class="w-[30px] lg:w-[30px] pr-2" src="@/assets/images/google.png" />
       Google
     </button>

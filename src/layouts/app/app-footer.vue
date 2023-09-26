@@ -1,26 +1,72 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRoute } from 'vue-router'
 
 let visibility = ref(false)
 
 let showDetailAccount = ref(false)
 
-const toggle = () => {
+const toggle = (e: any) => {
+  e.stopPropagation()
   visibility.value = !visibility.value
   showDetailAccount.value = false
 }
 
-const toggleDetailAccountVisibility = () => {
+const toggleDetailAccountVisibility = (e: any) => {
+  e.stopPropagation()
   showDetailAccount.value = !showDetailAccount.value
   visibility.value = false
 }
+
+const defaultClick = () => {
+  showDetailAccount.value = false
+  visibility.value = false
+}
+
+const route = useRoute()
+
+const menus = [
+  {
+    path: '/',
+    default: true,
+    fillIcon: 'i-fas-house',
+    borderIcon: 'i-far-house',
+    click: defaultClick
+  },
+  {
+    path: '/find',
+    default: true,
+    fillIcon: 'i-fas-magnifying-glass',
+    borderIcon: 'i-far-magnifying-glass',
+    click: defaultClick
+  },
+  {
+    fillIcon: 'i-fas-square-plus',
+    borderIcon: 'i-far-square-plus',
+    click: toggle
+  },
+  {
+    path: '/notification',
+    default: true,
+    fillIcon: 'i-fas-bell',
+    borderIcon: 'i-far-bell',
+    click: defaultClick
+  },
+  {
+    path: '/profile',
+    fillIcon: 'i-fas-user',
+    borderIcon: 'i-far-user',
+    click: toggleDetailAccountVisibility
+  }
+]
 </script>
 
 <template>
   <div>
     <!-- SLIDER - CREATE GOALS -->
     <div
+      v-click-outside
+      @onClickOutside="() => (visibility = false)"
       @click="toggle"
       v-if="visibility"
       class="font-semibold rounded-t-[30px] bg-blue text-center text-white space-y-[20px] py-[20px]"
@@ -38,6 +84,8 @@ const toggleDetailAccountVisibility = () => {
 
     <!-- SLIDER - DETAIL ACCOUNT -->
     <div
+      v-click-outside
+      @onClickOutside="(e: any) => (showDetailAccount = false)"
       @click="toggleDetailAccountVisibility"
       v-if="showDetailAccount"
       class="font-semibold rounded-t-[30px] bg-blue text-center text-white space-y-[20px] py-[20px]"
@@ -52,45 +100,27 @@ const toggleDetailAccountVisibility = () => {
     </div>
 
     <!-- BUTTON NAVIGATION -->
-    <div class="flex justify-between sm:static">
-      <!-- NAV - HOMEPAGE -->
-      <router-link class="w-full text-center" @click="visibility = false" :to="{ path: '/' }">
-        <button class="btn btn-icon rounded-full">
-          <i class="i-far-house h-25px w-25px"></i>
-        </button>
-      </router-link>
-
-      <!-- NAV - SEARCH USER -->
-      <router-link class="w-full text-center" @click="visibility = false" :to="{ path: '/find' }">
-        <button class="btn btn-icon rounded-full">
-          <i class="i-far-magnifying-glass h-25px w-25px"> </i>
-        </button>
-      </router-link>
-
-      <!-- NAV - CREATE GOALS -->
-      <div class="w-full text-center">
-        <button @click="toggle" class="btn btn-icon rounded-full">
-          <i class="i-far-square-plus h-25px w-25px"> </i>
-        </button>
-      </div>
-
-      <!-- NAV - NOTIFICATIONS -->
-      <router-link
+    <div class="flex justify-between sm:static py-4">
+      <component
+        v-for="(menu, index) in menus"
         class="w-full text-center"
-        @click="visibility = false"
-        :to="{ path: '/notification' }"
+        :key="index"
+        :is="menu.default ? RouterLink : 'div'"
+        v-bind="
+          menu.default
+            ? {
+                to: { path: menu.path }
+              }
+            : {}
+        "
       >
-        <button class="btn btn-icon rounded-full">
-          <i class="i-far-bell h-25px w-25px"> </i>
+        <button @click="menu.click" class="btn btn-icon rounded-full">
+          <i
+            class="h-25px w-25px"
+            :class="menu.path === route.path ? menu.fillIcon : menu.borderIcon"
+          ></i>
         </button>
-      </router-link>
-
-      <!-- NAV - DETAIL ACCOUNT -->
-      <div class="w-full text-center">
-        <button @click="toggleDetailAccountVisibility" class="btn btn-icon rounded-full">
-          <i class="i-far-user h-25px w-25px"> </i>
-        </button>
-      </div>
+      </component>
     </div>
   </div>
 </template>

@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { BaseInput, BaseDatepicker, BaseTextarea, BaseSelect } from '@/components/index'
 import { useUserStore } from '@/stores/user'
-import dayjs from 'dayjs'
 import router from '@/router'
+import { useRoute } from 'vue-router'
+import dayjs from 'dayjs'
 
 const list = [
   { id: 'public', label: 'Everyone' },
@@ -11,11 +12,15 @@ const list = [
   { id: 'private', label: 'Private' }
 ]
 
-const selected = ref({
+const route = useRoute()
+
+const id = route.params.id
+const selected = ref<any>({
   visibility: ''
 })
 
-const form = ref({
+const currentGoal = ref<any>(null)
+const form = ref<any>({
   category: '',
   visibility: '',
   caption: '',
@@ -38,15 +43,30 @@ const save = function () {
   // @ts-ignore
   let isAllFilled = values.category && values.caption && values.visibility
   if (isAllFilled) {
-    userStore.addResolutionGoal(values)
+    userStore.editResolutionGoal(values, id as string)
     router.push('/')
   }
 }
+
+onMounted(() => {
+  let goal = userStore.findGoalById(id as string)
+  if (goal) {
+    form.value = {
+      category: goal.category,
+      visibility: goal.visibility,
+      caption: goal.caption,
+      date_time: goal.date_time,
+      files: goal.photos
+    }
+    selected.value.visibility = list.find((l) => goal?.visibility === l.id) || list[0]
+    currentGoal.value = goal
+  }
+})
 </script>
 
 <template>
-  <div class="main-content-container">
-    <p class="text-lg font-semibold">Create Your Resolution</p>
+  <div v-if="currentGoal" class="main-content-container">
+    <p class="text-lg font-semibold">Update Resolution</p>
     <hr />
 
     <div>
@@ -57,9 +77,10 @@ const save = function () {
       <!-- category input -->
       <span class="font-semibold text-[#3D8AF7] block mb-2">Category</span>
       <BaseInput
+        :error="!form.category ? 'Enter a category' : ''"
         v-model="form.category"
-        :error="!(form.category as any)? 'Enter a category name': ''"
         placeholder="Input your category"
+        border="full"
         class="mb-8"
       ></BaseInput>
 
@@ -76,14 +97,13 @@ const save = function () {
 
       <!-- resolution input -->
       <span class="font-semibold text-[#3D8AF7] block mb-2">Resolution</span>
-      <component
-        :is="BaseTextarea"
-        :error="!form.caption ? 'Enter a caption' : ''"
+      <BaseTextarea
+        :error="!form.category ? 'Enter a caption' : ''"
         placeholder="Make sure you include numbers in them ex: lose 5kg by end of year "
         v-model="form.caption"
         border="simple"
         class="mb-8"
-      ></component>
+      ></BaseTextarea>
 
       <!-- upload photo -->
       <span class="font-semibold text-[#3D8AF7] block mb-2"
@@ -100,12 +120,12 @@ const save = function () {
       <!-- share with -->
       <span class="font-semibold text-[#3D8AF7] block mb-2">Share With</span>
       <BaseSelect
+        :isError="!(selected.visibility as any)?.id"
+        errorMessage="Choose a visibilty"
         @update:modelValue="onUpdateVisiblity($event)"
         v-model="selected.visibility"
         :list="list"
         border="full"
-        :isError="!(selected.visibility as any)?.id"
-        errorMessage="Choose a visibilty"
       ></BaseSelect>
 
       <!-- button -->
@@ -115,4 +135,5 @@ const save = function () {
       </div>
     </div>
   </div>
+  <div v-else>Goal not found</div>
 </template>

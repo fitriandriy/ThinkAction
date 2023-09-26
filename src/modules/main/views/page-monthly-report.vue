@@ -1,184 +1,76 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { BaseDatepicker, BaseTextarea, BaseSelect } from '@/components/index'
+import { onMounted, ref, watch } from 'vue'
+import { GoalModel } from '@/lib/models/GoalModel'
+import { useUserStore } from '@/stores/user'
+import { BaseSelect } from '@/components'
+import dayjs from 'dayjs'
 
-const list = [
-  { id: 1, label: 'Everyone' },
-  { id: 2, label: 'Supporter' },
-  { id: 3, label: 'Private' }
-]
+const monthList = ref<any>([])
+const month = ref<any>({
+  id: new Date().getMonth(),
+  label: dayjs(new Date(dayjs().year(), new Date().getMonth())).format('MMM YYYY')
+})
+const store = useUserStore()
 
-const categories = [
-  { id: 1, label: 'Finance' },
-  { id: 2, label: 'Health' },
-  { id: 3, label: 'Education' }
-]
+let categorized = ref<any>([])
+let Categories = ref<any>([])
 
-const weekly = ref([
-  {
-    category_id: 'GhtHVSB12NHGBSGHgg',
-    category: 'Finance',
-    resolutions: [
-      {
-        id: 'GhtHVSB12NHGBSGHgg',
-        resolution: 'nabung 10 juta',
-        due_date: '',
-        is_complete: true,
-        weekly_goals: [
-          {
-            id: 'GhtHVSB12NHGBSGHgg',
-            due_date: '2019-08-07T14:15:22Z',
-            is_complete: true,
-            goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
-          },
-          {
-            id: 'GhtHVSB12NHGBSGHgg',
-            due_date: '2019-08-14T14:15:22Z',
-            is_complete: true,
-            goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
-          },
-          {
-            id: 'GhtHVSB12NHGBSGHgg',
-            due_date: '2019-08-21T14:15:22Z',
-            is_complete: true,
-            goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
-          },
-          {
-            id: 'GhtHVSB12NHGBSGHgg',
-            due_date: '2019-08-28T14:15:22Z',
-            is_complete: true,
-            goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
-          },
-          {
-            id: 'GhtHVSB12NHGBSGHgg',
-            due_date: '2019-09-05T14:15:22Z',
-            is_complete: false,
-            goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
-          }
-        ]
-      }
-    ]
-  },
-  {
-    category_id: 'GhtHVSB12NHGBSGHgg',
-    category: 'Education',
-    resolutions: [
-      {
-        id: 'GhtHVSB12NHGBSGHgg',
-        resolution: 'nabung 10 juta',
-        due_date: '',
-        is_complete: false,
-        weekly_goals: [
-          {
-            id: 'GhtHVSB12NHGBSGHgg',
-            due_date: '2019-08-07T14:15:22Z',
-            is_complete: true,
-            goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
-          },
-          {
-            id: 'GhtHVSB12NHGBSGHgg',
-            due_date: '2019-08-14T14:15:22Z',
-            is_complete: true,
-            goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
-          },
-          {
-            id: 'GhtHVSB12NHGBSGHgg',
-            due_date: '2019-08-21T14:15:22Z',
-            is_complete: true,
-            goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
-          },
-          {
-            id: 'GhtHVSB12NHGBSGHgg',
-            due_date: '2019-08-28T14:15:22Z',
-            is_complete: true,
-            goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
-          },
-          {
-            id: 'GhtHVSB12NHGBSGHgg',
-            due_date: '2019-09-05T14:15:22Z',
-            is_complete: false,
-            goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
-          }
-        ]
-      }
-    ]
-  },
-  {
-    category_id: 'GhtHVSB12NHGBSGHgg',
-    category: 'Healthy',
-    resolutions: [
-      {
-        id: 'GhtHVSB12NHGBSGHgg',
-        resolution: 'nabung 10 juta',
-        due_date: '',
-        is_complete: false,
-        weekly_goals: [
-          {
-            id: 'GhtHVSB12NHGBSGHgg',
-            due_date: '2019-08-07T14:15:22Z',
-            is_complete: true,
-            goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
-          },
-          {
-            id: 'GhtHVSB12NHGBSGHgg',
-            due_date: '2019-08-14T14:15:22Z',
-            is_complete: true,
-            goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
-          },
-          {
-            id: 'GhtHVSB12NHGBSGHgg',
-            due_date: '2019-08-21T14:15:22Z',
-            is_complete: true,
-            goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
-          },
-          {
-            id: 'GhtHVSB12NHGBSGHgg',
-            due_date: '2019-08-28T14:15:22Z',
-            is_complete: true,
-            goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
-          },
-          {
-            id: 'GhtHVSB12NHGBSGHgg',
-            due_date: '2019-09-05T14:15:22Z',
-            is_complete: false,
-            goals: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis, amet?'
-          }
-        ]
-      }
-    ]
+onMounted(async () => {
+  let months = []
+  let firstMonth = dayjs(new Date(dayjs().year(), 0, 1)).month()
+  while (firstMonth <= dayjs().month() && firstMonth < 11) {
+    months.push({
+      id: firstMonth,
+      label: dayjs(new Date(dayjs().year(), firstMonth)).format('MMM YYYY')
+    })
+    firstMonth += 1
   }
-])
+  monthList.value = months
+  Categories.value = await store.getResolutionCategories()
+  categorized.value = await GoalModel.generateMonthlyReport(store, new Date().getMonth())
+})
 
-console.log(`LENGTH ${weekly.value.length}`)
+watch(month, async (currentValue) => {
+  if (currentValue.id)
+    categorized.value = await GoalModel.generateMonthlyReport(store, currentValue.id)
+})
 </script>
 
 <template>
   <div class="main-content-container">
     <h3 class="font-semibold">Monthly Report</h3>
     <hr />
+    <div class="flex justify-end">
+      <BaseSelect v-model="month" :list="monthList"> </BaseSelect>
+    </div>
 
     <div class="table-container">
       <table class="table">
         <thead>
           <tr class="basic-table-row">
             <th class="basic-table-head"></th>
-            <th v-for="category in weekly" :key="category.category_id" class="basic-table-head">
-              {{ category.category }}
+            <th
+              v-for="category in Categories"
+              :key="category"
+              class="basic-table-head text-xs w-28 max-w-[7rem] min-w-[7rem] text-center"
+            >
+              {{ category }}
             </th>
           </tr>
         </thead>
-        <tbody v-for="category in weekly" :key="category.category_id">
-          <tr class="basic-table-row">
-            <td class="basic-table-body">Week {{ weekly.indexOf(category) + 1 }}</td>
-            <td
-              v-for="weekly_goal in category.resolutions"
-              :key="weekly_goal.id"
-              class="basic-table-body {{ weekly_goal.is_complete ? bg-[#3D8AF7] : bg-blueGray }}"
-            >
-              {{ weekly_goal.is_complete }}
+        <tbody>
+          <tr
+            v-for="({ week, categories }, index) in categorized"
+            :key="week.start"
+            class="basic-table-row h-28"
+          >
+            <td class="basic-table-body text-sm min-w-[5rem] align-middle">Week {{ index + 1 }}</td>
+            <td v-for="{ id } in categories" :key="id" :class="'basic-table-body rounded-lg p-4'">
+              <div
+                class="w-20 h-20 flex rounded-lg"
+                :class="( categories.find((c: any) => c.id === id)?.goals?.is_completed === undefined? 'bg-gray-300':( categories.find((c: any) => c.id === id)?.goals?.is_completed ? 'bg-sky-300' : 'bg-pink-300'))"
+              ></div>
             </td>
-            <td class="basic-table-body">Quality Control Specialist</td>
-            <td class="basic-table-body">Blue</td>
           </tr>
         </tbody>
       </table>

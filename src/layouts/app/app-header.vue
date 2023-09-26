@@ -1,13 +1,39 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { BaseInput, BasePopper } from '@/components/index'
-import ComponentToggleSidebar from './component-toggle-sidebar.vue'
 import { appName } from '@/config/app'
 import { RouterLink } from 'vue-router'
+import { useUserStore } from '@/stores/user'
 
 const form = ref({
   key: ''
 })
+
+let isDropdownOpen = ref(false)
+const userStore = useUserStore()
+
+const toggleHeader = function () {
+  isDropdownOpen.value = !isDropdownOpen.value
+}
+
+const links = [
+  {
+    label: 'Profile',
+    path: '/user/' + userStore.currentUser?.id
+  },
+  {
+    label: 'Monthly Reports',
+    path: '/monthly-report'
+  },
+  {
+    label: 'Yearly Reports',
+    path: '/yearly-report'
+  },
+  {
+    label: 'My Invoice',
+    path: '/invoices'
+  }
+]
 </script>
 
 <template>
@@ -19,7 +45,7 @@ const form = ref({
         <!-- Left: Sidebar Toggle Button -->
         <div class="flex">
           <!-- screen: sm -->
-          <component :is="ComponentToggleSidebar" class="pr-4" />
+          <!-- <component :is="ComponentToggleSidebar" class="pr-4" /> -->
           <router-link :to="{ path: '/' }">
             <div class="flex">
               <img src="/main-logo.png" class="w-[30px] mr-1" alt="ThinkApp Logo" />
@@ -39,11 +65,11 @@ const form = ref({
               class="border-2 border-slate rounded-lg"
             ></component>
 
-            <router-link :to="{ path: '/' }">
+            <router-link class="font-medium" :to="{ path: '/' }">
               <span>Home</span>
             </router-link>
 
-            <component :is="BasePopper" placement="bottom-start">
+            <component :is="BasePopper" class="font-medium" placement="bottom-start">
               <button class="ml-5">Create Goals</button>
               <template #content>
                 <div class="rounded-lg">
@@ -68,12 +94,27 @@ const form = ref({
               </template>
             </component>
 
-            <router-link :to="{ path: '/notification' }">
+            <router-link class="font-medium" :to="{ path: '/notification' }">
               <span>Notification</span>
             </router-link>
 
-            <div class="avatar avatar-sm">
+            <button @click="toggleHeader" class="avatar avatar-sm relative">
               <span class="avatar-initial rounded-full bg-warning text-white">JD</span>
+            </button>
+
+            <div
+              v-if="isDropdownOpen"
+              class="md:flex hidden absolute bg-white shadow-md rounded-md top-full right-0 w-fit min-w-[150px] flex-col"
+            >
+              <router-link
+                @click.enter="isDropdownOpen = false"
+                v-for="(link, index) in links"
+                :key="index"
+                :to="{ path: link.path }"
+                class="text-sm font-normal text-slate-700 cursor-pointer px-4 py-2 hover:bg-slate-100"
+              >
+                {{ link.label }}
+              </router-link>
             </div>
           </div>
         </div>

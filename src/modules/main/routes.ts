@@ -15,20 +15,24 @@ export const routes = {
       component: () => import('./views/page-detail-user.vue')
     },
     {
-      path: 'supporters',
-      component: () => import('./views/page-supporter.vue')
-    },
-    {
-      path: 'supporting',
-      component: () => import('./views/page-supporting.vue')
+      path: 'user/:id/:type',
+      component: () => import('./views/page-relations.vue')
     },
     {
       path: 'create-resolution',
       component: () => import('./views/page-create-resolution.vue')
     },
     {
-      path: 'edit-goal',
-      component: () => import('./views/page-edit-goal.vue')
+      path: 'edit-resolution/:id',
+      component: () => import('./views/page-edit-resolution.vue')
+    },
+    {
+      path: 'edit-weekly/:id',
+      component: () => import('./views/page-edit-weekly-goals.vue')
+    },
+    {
+      path: 'edit-completed/:id',
+      component: () => import('./views/page-edit-complete-goals.vue')
     },
     {
       path: 'create-weekly-goals',

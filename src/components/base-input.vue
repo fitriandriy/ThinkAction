@@ -81,7 +81,8 @@ onMounted(() => {
           :class="{
             'border-b border-x-none border-t-none': border === 'simple',
             'border ': border === 'full',
-            'border-none': border === 'none'
+            'border-none': border === 'none',
+            'bg-slate-200': disabled
           }"
           v-model="value"
           :type="props.type"
@@ -111,7 +112,7 @@ onMounted(() => {
         <span class="text-sm text-slate-500">{{ helper }}</span>
       </slot>
       <slot name="error" v-if="error">
-        <span class="text-sm text-danger">{{ error }}</span>
+        <span class="text-xs mt-1 ml-2 text-red-400">{{ error }}</span>
       </slot>
     </div>
   </div>
